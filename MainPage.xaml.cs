@@ -13,97 +13,48 @@
         }
         private void Refresh_UI()
         {
-            if (oneDollarCount <= 0)
-            {
-                oneDollarCount = 0;
-                oneDollarConvertDown.Opacity = 0.5;
-            }
-            if (oneDollarCount >= 1)
-            {
-                oneDollarConvertDown.Opacity = 1;
-            }
-            if (fiftyCentCount <= 0)
-            {
-                fiftyCentCount = 0;
-                fiftyCentConvertDown.Opacity = 0.5;
-                fiftyCentConvertUp.Opacity = 0.5;
-            }
-            if (fiftyCentCount >= 1)
-            {
-                if (fiftyCentCount >= 2)
-                {
-                    fiftyCentConvertUp.Opacity = 1;
-                    fiftyCentConvertDown.Opacity = 1;
-                }
-                else
-                {
-                    fiftyCentConvertDown.Opacity = 1;
-                    fiftyCentConvertUp.Opacity = 0.5;
-                }
-            }
-            if (tenCentCount <= 0)
-            {
-                tenCentCount = 0;
-                tenCentConvertDown.Opacity = 0.5;
-                tenCentConvertUp.Opacity = 0.5;
-            }
-            if (tenCentCount >= 1)
-            {
-                if (tenCentCount >= 5)
-                {
-                    tenCentConvertUp.Opacity = 1;
-                    tenCentConvertDown.Opacity = 1;
-                }
-                else
-                {
-                    tenCentConvertDown.Opacity = 1;
-                    tenCentConvertUp.Opacity = 0.5;
-                }
-            }
-            if (fiveCentCount <= 0)
-            {
-                fiveCentCount= 0;
-                fiveCentConvertDown.Opacity = 0.5;
-                fiveCentConvertUp.Opacity = 0.5;
-            }
-            if (fiveCentCount >= 2)
-            {
-                fiveCentConvertUp.Opacity = 1;
-            }
-            oneDollarAmount.Text = "(" + Convert.ToString(oneDollarCount) + ")";
-            oneDollarTotal.Text = "$ " + Convert.ToString(oneDollarCount);
-            fiftyCentAmount.Text = "(" + Convert.ToString(fiftyCentCount) + ")";
-            if (fiftyCentCount > 1)
-            {
-                fiftyCentTotal.Text = "$" + (fiftyCentCount / 2.0).ToString("0.00") + "c";
-            }
-            else
-            {
-                fiftyCentTotal.Text = Convert.ToString(fiftyCentCount * 50) + "c";
-            }
-            tenCentAmount.Text = "(" + Convert.ToString(tenCentCount) + ")";
-            if (tenCentCount > 9)
-            {
-                tenCentTotal.Text = "$" + (tenCentCount / 10.0).ToString("0.00") + "c";
-            }
-            else
-            {
-                tenCentTotal.Text = Convert.ToString(tenCentCount * 10) + "c";
-            }
-            fiveCentAmount.Text = "(" + Convert.ToString(fiveCentCount) + ")";
-            if (fiveCentCount > 19)
-            {
-                fiveCentTotal.Text = "$" + (fiveCentCount / 20.0).ToString("0.00") + "c";
-            }
-            else
-            {
-                fiveCentTotal.Text = Convert.ToString(fiveCentCount * 5) + "c";
-            }
-            totalLabel.Text = "$" + (oneDollarCount +
-               (fiftyCentCount / 2) +
-               (tenCentCount / 10) +
-               (fiveCentCount / 20)).ToString("0.00") + "c"; 
+            UpdateButtonOpacity(oneDollarConvertDown, oneDollarCount, 1.0);
+            UpdateButtonOpacity(fiftyCentConvertDown, fiftyCentCount, 1.0);
+            UpdateButtonOpacity(fiftyCentConvertUp, fiftyCentCount, 2.0);
+            UpdateButtonOpacity(tenCentConvertDown, tenCentCount, 1.0);
+            UpdateButtonOpacity(tenCentConvertUp, tenCentCount, 5.0);
+            UpdateButtonOpacity(fiveCentConvertUp, fiveCentCount, 2.0);
+
+            UpdateCoinAmount(oneDollarAmount, oneDollarCount);
+            UpdateCoinAmount(fiftyCentAmount, fiftyCentCount);
+            UpdateCoinAmount(tenCentAmount, tenCentCount);
+            UpdateCoinAmount(fiveCentAmount, fiveCentCount);
+
+            UpdateCoinTotal(oneDollarTotal, oneDollarCount, 1.0, 1.0);
+            UpdateCoinTotal(fiftyCentTotal, fiftyCentCount, 2.0, 50);
+            UpdateCoinTotal(tenCentTotal, tenCentCount, 10.0, 10);
+            UpdateCoinTotal(fiveCentTotal, fiveCentCount, 20.0, 5);
+
+            UpdateTotalLabel();
         }
+
+        private void UpdateButtonOpacity(Button button, double coinCount, double threshold)
+        {
+            button.Opacity = coinCount <= 0.0 ? 0.5 : coinCount >= threshold ? 1.0 : 0.5;
+        }
+
+        private void UpdateCoinAmount(Label label, double coinCount)
+        {
+            label.Text = $"({coinCount.ToString("0")})";
+        }
+
+        private void UpdateCoinTotal(Label label, double coinCount, double divisor, double multiplier)
+        {
+            double total = coinCount / divisor;
+            label.Text = total >= 1.0 ? $"${total.ToString("0.00")}c" : $"{(coinCount * multiplier).ToString()}c";
+        }
+
+        private void UpdateTotalLabel()
+        {
+            double totalValue = oneDollarCount + (fiftyCentCount / 2.0) + (tenCentCount / 10.0) + (fiveCentCount / 20.0);
+            totalLabel.Text = $"${totalValue.ToString("0.00")}c";
+        }
+
         private void OneDollarPlusButton_Clicked(object sender, EventArgs e)
         {
             oneDollarCount++;
